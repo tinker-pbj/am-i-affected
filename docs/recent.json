@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-19T21:06+00:00",
+ "generated": "2026-11-19T23:01+00:00",
  "days": 14,
  "advisories": [
   {
@@ -329,17 +329,6 @@
    ],
    "summary": "LXD has arbitrary file write on host via `exec-output` symlink in crafted image",
    "published": "2026-11-06",
-   "exploited": false
-  },
-  {
-   "id": "PYSEC-2026-4363",
-   "cve": "CVE-2026-112902",
-   "ecosystem": "PyPI",
-   "packages": [
-    "pillow"
-   ],
-   "summary": "Pillow is a Python imaging library. In versions through 12.3.0, the libtiff TIFF encoder can pass arguments to \u00a0TIFFSetField()\u00a0 that do not match libtiff\u2019s defi",
-   "published": "2026-11-05",
    "exploited": false
   }
  ]
