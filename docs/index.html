@@ -44,6 +44,10 @@ button:disabled{opacity:.5;cursor:default}
 .recent .ra{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line);font-size:.9rem}.recent .ra:first-child{border-top:0}
 .recent .eco{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:var(--soft);border-radius:6px;padding:3px 6px;text-align:center}
 .recent a{color:var(--ink)}.recent .d{white-space:nowrap;font-size:.8rem}.recent details{margin-top:6px}
+.repo{display:flex;gap:10px}.repo input{flex:1;min-width:0;font:14px ui-monospace,Menlo,monospace;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);outline:none}
+.repo input:focus{border-color:var(--acc)}
+.or{display:flex;align-items:center;gap:12px;margin:18px 0 14px;color:var(--mut);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
+@media (max-width:520px){.repo{flex-direction:column}}
 .vers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
 .vers label{font-weight:700;font-size:.85rem}.vers input{width:100%;margin-top:4px;font:14px ui-monospace,Menlo,monospace;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .vers small{display:block;color:var(--mut);font-weight:500}
@@ -67,16 +71,21 @@ footer{color:var(--mut);font-size:.8rem;text-align:center;margin-top:26px}footer
 <div class="band"><header><a class="brand" href="/">Am I <b>Affected?</b></a></header></div>
 <div class="wrap">
   <div class="intro"><h1>Is your project affected by a known vulnerability?</h1>
-    <p>Paste or drop a lockfile, or a public GitHub repo URL. It's read <b>in your browser</b> and every dependency is checked against the open <a href="https://osv.dev" style="color:inherit">OSV database</a>, with brand-new critical bugs flagged first. No sign-up, nothing stored.</p></div>
+    <p>Enter a public GitHub repo, or paste a lockfile. It's read <b>in your browser</b> and every dependency is checked against the open <a href="https://osv.dev" style="color:inherit">OSV database</a>, with brand-new critical bugs flagged first. No sign-up, nothing stored.</p></div>
 
   <section class="card"><h2>New critical vulnerabilities, last 14 days <span class="mut" id="recentMeta" style="font-weight:500"></span></h2>
     <div id="recent" class="recent"><span class="mut">Loading…</span></div>
     <p class="mut" style="margin:10px 0 0">Updated every 2 hours from OSV.dev. <span class="chip CRITICAL" style="font-size:.66rem">EXPLOITED</span> = on CISA's list of vulnerabilities attackers are actively using. Check your lockfile below to see if any of these (or older ones) hit you.</p></section>
   <section class="card">
-    <h2>Your lockfile</h2>
-    <textarea id="lock" spellcheck="false" placeholder="Paste a public GitHub repo URL, or paste / drop: package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lock, deno.lock, Gemfile.lock, poetry.lock, uv.lock, pdm.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum / go.mod, composer.lock, pom.xml, gradle.lockfile, packages.lock.json / .csproj, pubspec.lock, mix.lock, Package.resolved, renv.lock, or a CycloneDX / SPDX SBOM."></textarea>
-    <div class="row"><button id="go">Check</button><label class="btn ghost" style="cursor:pointer">Choose file<input id="file" type="file" hidden></label>
-      <button class="ghost" id="sample">Try a sample</button><span class="mut" id="detected"></span></div>
+    <h2>Check a public GitHub repo</h2>
+    <div class="repo"><input id="repo" type="url" spellcheck="false" autocomplete="off" placeholder="https://github.com/owner/repo"><button id="goRepo">Check repo</button></div>
+    <p class="mut" style="margin:6px 0 0">Finds the lockfile at the repo root. Link a folder (…/tree/main/app) or the file itself for monorepos.</p>
+    <div class="or"><span>or</span></div>
+    <h2>Paste or drop a lockfile</h2>
+    <textarea id="lock" spellcheck="false" placeholder="package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lock, deno.lock, Gemfile.lock, poetry.lock, uv.lock, pdm.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum / go.mod, composer.lock, pom.xml, gradle.lockfile, packages.lock.json / .csproj, pubspec.lock, mix.lock, Package.resolved, renv.lock, or a CycloneDX / SPDX SBOM"></textarea>
+    <div class="row"><button id="go">Check lockfile</button><label class="btn ghost" style="cursor:pointer">Choose file<input id="file" type="file" hidden></label>
+      <button class="ghost" id="sample">Try a sample</button></div>
+    <p class="mut" id="detected" style="margin:8px 0 0;min-height:1.3em"></p>
     <div class="progress" id="prog" hidden><i></i></div>
   </section>
 
@@ -119,7 +128,7 @@ function readFile(f) {
 }
 let parsed = null;
 function detect() {
-  if (/^\s*(https?:\/\/)?(www\.)?github\.com\/\S+\s*$/.test(lock.value)) { parsed = null; $('detected').textContent = 'GitHub repo: press Check to fetch its lockfile'; return; }
+  if (/^\s*(https?:\/\/)?(www\.)?github\.com\/\S+\s*$/.test(lock.value)) { $('repo').value = lock.value.trim(); lock.value = ''; parsed = null; $('detected').textContent = 'Moved the link to the repo box above. Press Check repo.'; return; }
   parsed = lock.value.trim() ? parseLockfile(lock.value, filename) : null;
   $('detected').textContent = !lock.value.trim() ? '' : parsed ? `Detected ${parsed.kind}: ${parsed.packages.length} packages (${parsed.ecosystem === 'mixed' ? [...new Set(parsed.packages.map((p) => p.ecosystem))].join(', ') : parsed.ecosystem})` : /^#!\/usr\/bin\/env bun/.test(lock.value) ? 'That looks like binary bun.lockb. Run bun install --save-text-lockfile and paste bun.lock instead.' : "Couldn't recognise this format";
 }
@@ -199,22 +208,38 @@ async function fromGitHub(url) {
   const m = url.trim().match(/^(?:https?:\/\/)?(?:www\.)?github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?(?:\/(?:tree|blob)\/([^/\s]+)(?:\/([^\s]*?))?)?\/?$/);
   if (!m) return null;
   const [, owner, repo, ref = 'HEAD', dir = ''] = m, base = `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir ? dir.replace(/\/$/, '') + '/' : ''}`;
-  if (/\.(lock|json|yaml|txt|sum|mod|xml|lockfile|resolved)$/.test(dir)) { const r = await fetch(base.replace(/\/$/, '')); return r.ok ? { name: dir.split('/').pop(), text: await r.text(), src: `${owner}/${repo}/${dir}` } : { error: 'not found' }; }
+  if (/\.(lock|json|yaml|txt|sum|mod|xml|lockfile|resolved)$/.test(dir)) { const r = await fetch(base.replace(/\/$/, '')); if (!r.ok) return { error: 'not found' }; const text = await r.text(), name = dir.split('/').pop(), p = parseLockfile(text, name); return p ? { parsed: p, text, name, src: `${owner}/${repo}/${dir}` } : { error: 'no lockfile' }; }
   const found = await Promise.all(LOCKFILES.map(async (f) => { try { const r = await fetch(base + f); return r.ok ? { name: f, text: await r.text() } : null; } catch { return null; } }));
-  const hit = found.find((x) => x && parseLockfile(x.text, x.name));
-  return hit ? { ...hit, src: `${owner}/${repo}${dir ? '/' + dir : ''}` } : { error: 'no lockfile' };
+  // every lockfile at that path counts (e.g. Rails app = Gemfile.lock + pnpm-lock.yaml); skip manifests when a lockfile covers the same ecosystem
+  const parsedAll = found.filter(Boolean).map((x) => ({ ...x, p: parseLockfile(x.text, x.name) })).filter((x) => x.p);
+  const lockEcos = new Set(parsedAll.filter((x) => !/requirements\.txt|pom\.xml|go\.mod/.test(x.name)).map((x) => x.p.ecosystem));
+  const use = parsedAll.filter((x) => !(/requirements\.txt|pom\.xml/.test(x.name) && lockEcos.has(x.p.ecosystem)));
+  if (!use.length) return { error: 'no lockfile' };
+  return { files: use.map((x) => x.name), parsed: { kind: use.map((x) => x.name).join(' + '), ecosystem: 'mixed', packages: use.flatMap((x) => x.p.packages) },
+           text: use[0].text, name: use[0].name, src: `${owner}/${repo}${dir ? '/' + dir : ''}` };
 }
 
 $('go').addEventListener('click', check);
-async function check() {
-  if (/^\s*(https?:\/\/)?(www\.)?github\.com\//.test(lock.value) && !lock.value.trim().includes('\n')) {
-    const url = lock.value; $('detected').textContent = 'Fetching lockfile from GitHub…';
+$('repo').addEventListener('keydown', (e) => { if (e.key === 'Enter') checkRepo(); });
+$('goRepo').addEventListener('click', checkRepo);
+async function checkRepo() {
+  const url = $('repo').value.trim(), R = $('results');
+  if (!url) { $('repo').focus(); return; }
+  if (!/^(https?:\/\/)?(www\.)?github\.com\/[\w.-]+\/[\w.-]+/.test(url)) { R.hidden = false; R.innerHTML = '<p class="big">That doesn\'t look like a GitHub repo link.</p><p class="mut">Use e.g. https://github.com/vercel/next.js</p>'; return; }
+  $('goRepo').disabled = true; $('detected').textContent = 'Fetching lockfile from GitHub…';
+  try {
     const g = await fromGitHub(url);
-    if (!g || g.error) { $('detected').textContent = g?.error === 'no lockfile' ? 'No lockfile found at the root of that repo. Link to the folder or the file itself.' : "Couldn't fetch that. Is the repo public?"; return; }
-    lock.value = g.text; filename = g.name; detect(); $('detected').textContent = `From ${g.src}: ` + $('detected').textContent;
-  }
+    if (!g || g.error) { R.hidden = false; R.innerHTML = g?.error === 'no lockfile' ? '<p class="big">No lockfile at the root of that repo.</p><p class="mut">For monorepos, link the folder (…/tree/main/app) or the lockfile itself.</p>' : '<p class="big">Couldn\'t fetch that repo.</p><p class="mut">Is it public? Private repos can\'t be read from the browser. Paste the lockfile below instead.</p>'; $('detected').textContent = ''; return; }
+    if (g.parsed) { parsed = g.parsed; lock.value = ''; filename = ''; }
+    else { lock.value = g.text; filename = g.name; detect(); }
+    const ecos = [...new Set(parsed.packages.map((p) => p.ecosystem))].join(', ');
+    $('detected').textContent = `From ${g.src}: ${parsed.kind}, ${parsed.packages.length} packages (${ecos})`;
+    await check(true);
+  } finally { $('goRepo').disabled = false; }
+}
+async function check(fromRepo) {
   const R = $('results'), prog = $('prog'), bar = prog.firstElementChild;
-  if (!lock.value.trim()) { R.hidden = false; R.innerHTML = '<p class="big">Paste a lockfile first.</p>'; return; }
+  if (!fromRepo && !lock.value.trim()) { R.hidden = false; R.innerHTML = '<p class="big">Paste a lockfile first, or enter a repo above.</p>'; return; }
   if (!parsed) { R.hidden = false; R.innerHTML = `<p class="big">Couldn't read that file.</p><p class="mut">Supported: package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lock, deno.lock, Gemfile.lock, poetry.lock, uv.lock, pdm.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum / go.mod, composer.lock, pom.xml, gradle.lockfile, packages.lock.json / .csproj, pubspec.lock, mix.lock, Package.resolved, renv.lock, or a CycloneDX / SPDX SBOM. A plain package.json only has version ranges, so use its lockfile.</p>`; return; }
   $('go').disabled = true; prog.hidden = false; bar.style.width = '2%';
   const step = (f) => bar.style.width = Math.round(f * 100) + '%';
