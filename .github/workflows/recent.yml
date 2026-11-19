@@ -1,0 +1,21 @@
+name: Refresh recent critical advisories
+on:
+  schedule: [{ cron: "23 13 * * *" }]   # daily 13:23 UTC
+  workflow_dispatch:
+permissions: { contents: write }
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python build_recent.py
+      - name: Sanity check
+        run: python -c "import json; d=json.load(open('docs/recent.json')); assert isinstance(d['advisories'], list); print(len(d['advisories']))"
+      - name: Commit if changed
+        run: |
+          git diff --quiet docs/recent.json && { echo "no change"; exit 0; }
+          git config user.name "Tinker (bot)"; git config user.email "tinker@prestonbjensen.com"
+          git add docs/recent.json && git commit -m "Recent advisories $(date -u +%F)" && git push

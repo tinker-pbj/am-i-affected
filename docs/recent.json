@@ -1,0 +1,313 @@
+{
+ "generated": "2026-11-19T16:24+00:00",
+ "days": 14,
+ "advisories": [
+  {
+   "id": "GHSA-gj9m-f8ph-pmhr",
+   "cve": "CVE-2026-102895",
+   "ecosystem": "PyPI",
+   "packages": [
+    "gpustack"
+   ],
+   "summary": "GPUStack: Authentication bypass via trusted loopback source (reverse-proxy TCP peer or X-GPUStack-Real-IP header) grants unauthenticated admin",
+   "published": "2026-11-09",
+   "exploited": true
+  },
+  {
+   "id": "GHSA-8fh7-7q4q-cq52",
+   "cve": "CVE-2026-75521",
+   "ecosystem": "Go",
+   "packages": [
+    "miren.dev/runtime"
+   ],
+   "summary": "Miren Runtime: Authentication bypass in RPC layer: unverified TLS client certificates grant cluster superuser access",
+   "published": "2026-11-19",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-5hrj-7fc3-cmx9",
+   "cve": "CVE-2026-130001",
+   "ecosystem": "RubyGems",
+   "packages": [
+    "mustache"
+   ],
+   "summary": "Mustache for Ruby: RCE using built-in method access",
+   "published": "2026-11-18",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-pfwx-xjp4-qxcj",
+   "cve": "CVE-2026-69157",
+   "ecosystem": "crates.io",
+   "packages": [
+    "atomic-server"
+   ],
+   "summary": "Atomic Server: Unauthenticated `/setup` invite grants write access to the entire Drive",
+   "published": "2026-11-18",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-gfv3-m769-5xm3",
+   "cve": "CVE-2026-53998",
+   "ecosystem": "PyPI",
+   "packages": [
+    "arize-phoenix"
+   ],
+   "summary": "Phoenix: Format String Injection in applyChatTemplate",
+   "published": "2026-11-17",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-x585-4vv8-2mh2",
+   "cve": "CVE-2026-100397",
+   "ecosystem": "PyPI",
+   "packages": [
+    "rucio"
+   ],
+   "summary": "Rucio: Unauthenticated administrator impersonation through SSH challenge tokens",
+   "published": "2026-11-13",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-f3w6-w445-fwh9",
+   "cve": "CVE-2026-122006",
+   "ecosystem": "RubyGems",
+   "packages": [
+    "activestorage"
+   ],
+   "summary": "Active Storage: Possible arbitrary file write and read in image analysis",
+   "published": "2026-11-12",
+   "exploited": false
+  },
+  {
+   "id": "RUSTSEC-2026-0501",
+   "cve": null,
+   "ecosystem": "crates.io",
+   "packages": [
+    "bsv-rs"
+   ],
+   "summary": "Shamir backup recovery accepts a share at x = 0, so a supplied share can substitute the recovered private key",
+   "published": "2026-11-12",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-4g86-54fm-h9h8",
+   "cve": "CVE-2026-118740",
+   "ecosystem": "NuGet",
+   "packages": [
+    "Aspire.Dashboard.Sdk.linux-arm64",
+    "Aspire.Dashboard.Sdk.linux-musl-x64",
+    "Aspire.Dashboard.Sdk.linux-x64",
+    "Aspire.Dashboard.Sdk.osx-arm64",
+    "Aspire.Dashboard.Sdk.osx-x64",
+    "Aspire.Dashboard.Sdk.win-arm64",
+    "Aspire.Dashboard.Sdk.win-x64"
+   ],
+   "summary": "Microsoft Security Advisory CVE-2026-118740 - Aspire Security Feature Bypass Vulnerability",
+   "published": "2026-11-12",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-xqc2-xf4c-x3h3",
+   "cve": "CVE-2026-126187",
+   "ecosystem": "npm",
+   "packages": [
+    "react-server-dom-parcel",
+    "react-server-dom-turbopack",
+    "react-server-dom-webpack"
+   ],
+   "summary": "React: Unauthenticated Remote Code Execution in React Server Components",
+   "published": "2026-11-10",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-pcrw-h46h-c93h",
+   "cve": "CVE-2026-125120",
+   "ecosystem": "npm",
+   "packages": [
+    "mongoose"
+   ],
+   "summary": "Mongoose: sanitizeFilter not applied on countDocuments",
+   "published": "2026-11-10",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-xggf-m53x-jc3f",
+   "cve": "CVE-2026-95860",
+   "ecosystem": "npm",
+   "packages": [
+    "node-opcua",
+    "node-opcua-address-space",
+    "node-opcua-server"
+   ],
+   "summary": "node-opcua: Namespace-Level RBAC Fail-Open - Anonymous Write/Call Bypass via Unbound `DefaultRolePermissions",
+   "published": "2026-11-10",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-8vv3-6qpc-gpw6",
+   "cve": "CVE-2026-107846",
+   "ecosystem": "npm",
+   "packages": [
+    "bitcoinjs-lib"
+   ],
+   "summary": "bitcoinjs-lib: Undetected merkle node duplication in block root computation validates a forged transaction list",
+   "published": "2026-11-10",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-62m9-f875-rqw6",
+   "cve": "CVE-2026-102894",
+   "ecosystem": "PyPI",
+   "packages": [
+    "gpustack"
+   ],
+   "summary": "GPUStack: SAML callback trusts an unverified SAMLResponse, allowing authentication bypass and account takeover",
+   "published": "2026-11-10",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-6xmv-cjr5-w3q8",
+   "cve": "CVE-2026-63469",
+   "ecosystem": "PyPI",
+   "packages": [
+    "fastapi-code-generator"
+   ],
+   "summary": "fastapi-code-generator: Import-time RCE via response status-code key -> unescaped @app.get(..., responses={...}) dict",
+   "published": "2026-11-09",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-p2mm-64f6-gmpp",
+   "cve": "CVE-2026-63471",
+   "ecosystem": "PyPI",
+   "packages": [
+    "fastapi-code-generator"
+   ],
+   "summary": "fastapi-code-generator: Import-time RCE via route path -> unescaped @app.get('...') decorator",
+   "published": "2026-11-09",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-h667-4jj2-cgv4",
+   "cve": "CVE-2026-63470",
+   "ecosystem": "PyPI",
+   "packages": [
+    "fastapi-code-generator"
+   ],
+   "summary": "fastapi-code-generator: Call-time RCE via operation summary -> unescaped route-handler docstring",
+   "published": "2026-11-09",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-rjr3-43j3-4q8g",
+   "cve": "CVE-2026-77596",
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/kubeflow/pipelines"
+   ],
+   "summary": "Kubeflow Pipelines API server lacks authorization for shared pipeline uploads",
+   "published": "2026-11-09",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-rm8c-2cv8-jwf6",
+   "cve": "CVE-2026-115770",
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/pocket-id/pocket-id/backend"
+   ],
+   "summary": "Pocket ID: Email verification token remains valid after address change, enabling arbitrary verified-email spoofing",
+   "published": "2026-11-09",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-47w9-6r3f-938g",
+   "cve": null,
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/canonical/lxd"
+   ],
+   "summary": "LXD has restricted project bypass leading to arbitrary command execution",
+   "published": "2026-11-06",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-pjff-c2wc-f6jm",
+   "cve": null,
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/canonical/lxd"
+   ],
+   "summary": "LXD has arbitrary file write on client due to trusted image hash",
+   "published": "2026-11-06",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-vghh-5rfx-xhq8",
+   "cve": null,
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/canonical/lxd"
+   ],
+   "summary": "LXD has arbitrary file read+write on host via rootfs/ symlink in malicious image",
+   "published": "2026-11-06",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-fmc8-p6q7-75cc",
+   "cve": null,
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/canonical/lxd"
+   ],
+   "summary": "LXD has argument injection in backup compression algorithm leading to AFW and ACE",
+   "published": "2026-11-06",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-jpf8-86f3-wp38",
+   "cve": null,
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/canonical/lxd"
+   ],
+   "summary": "LXD has arbitrary file read+write on host via templates/ symlink in malicious image",
+   "published": "2026-11-06",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-9j25-mm2h-2f76",
+   "cve": null,
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/canonical/lxd"
+   ],
+   "summary": "LXD has arbitrary file write on host via `exec-output` symlink in crafted image",
+   "published": "2026-11-06",
+   "exploited": false
+  },
+  {
+   "id": "PYSEC-2026-4363",
+   "cve": "CVE-2026-112902",
+   "ecosystem": "PyPI",
+   "packages": [
+    "pillow"
+   ],
+   "summary": "Pillow is a Python imaging library. In versions through 12.3.0, the libtiff TIFF encoder can pass arguments to \u00a0TIFFSetField()\u00a0 that do not match libtiff\u2019s defi",
+   "published": "2026-11-05",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-5q7h-w9jf-cx97",
+   "cve": "CVE-2026-105769",
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/chainguard-dev/kaniko"
+   ],
+   "summary": "kaniko can send the build's Azure (Entra ID) access token to lookalike ACR registry hosts",
+   "published": "2026-11-05",
+   "exploited": false
+  }
+ ]
+}

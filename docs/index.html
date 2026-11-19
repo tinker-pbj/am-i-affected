@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Am I Affected? Check your lockfile against known vulnerabilities</title>
+<title>Am I Affected? Check your lockfile for known vulnerabilities</title>
 <meta name="description" content="Paste a lockfile (npm, yarn, pnpm, Gemfile.lock, poetry, requirements.txt, Cargo.lock, go.sum, composer.lock) and see which known vulnerabilities hit your dependencies, plus this week's big ones. Runs in your browser, no sign-up.">
 <meta name="theme-color" content="#0b0b0b">
 <style>
@@ -35,6 +35,9 @@ button,.btn{font:inherit;font-weight:800;border:0;border-radius:99px;padding:10p
 button.ghost,.btn.ghost{background:var(--soft);color:var(--ink)}
 button:disabled{opacity:.5;cursor:default}
 .mut{color:var(--mut);font-size:.88rem}
+.recent .ra{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line);font-size:.9rem}.recent .ra:first-child{border-top:0}
+.recent .eco{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:var(--soft);border-radius:6px;padding:3px 6px;text-align:center}
+.recent a{color:var(--ink)}.recent .d{white-space:nowrap;font-size:.8rem}.recent details{margin-top:6px}
 .vers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
 .vers label{font-weight:700;font-size:.85rem}.vers input{width:100%;margin-top:4px;font:14px ui-monospace,Menlo,monospace;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .vers small{display:block;color:var(--mut);font-weight:500}
@@ -57,20 +60,15 @@ footer{color:var(--mut);font-size:.8rem;text-align:center;margin-top:26px}footer
 <body>
 <div class="band"><header><a class="brand" href="/">Am I <b>Affected?</b></a></header></div>
 <div class="wrap">
-  <div class="intro"><h1>Does this week's big vulnerability hit you?</h1>
-    <p>Paste or drop a lockfile. It's read <b>in your browser</b> and every dependency is checked against the open <a href="https://osv.dev" style="color:inherit">OSV database</a>, with this week's headline bugs flagged first. No sign-up, nothing stored.</p></div>
+  <div class="intro"><h1>Is your project affected by a known vulnerability?</h1>
+    <p>Paste or drop a lockfile. It's read <b>in your browser</b> and every dependency is checked against the open <a href="https://osv.dev" style="color:inherit">OSV database</a>, with brand-new critical bugs flagged first. No sign-up, nothing stored.</p></div>
 
-  <section class="card"><h2>This week</h2><div class="named" id="named"></div>
-    <p class="mut" style="margin:10px 0 0">These are checked from your Ruby version (read from Gemfile.lock) and the server versions below. Brand-new bugs often reach vulnerability databases days later, so these are maintained by hand from the vendors' advisories.</p></section>
-
+  <section class="card"><h2>New critical vulnerabilities, last 14 days <span class="mut" id="recentMeta" style="font-weight:500"></span></h2>
+    <div id="recent" class="recent"><span class="mut">Loading…</span></div>
+    <p class="mut" style="margin:10px 0 0">Updated daily from OSV.dev. <span class="chip CRITICAL" style="font-size:.66rem">EXPLOITED</span> = on CISA's list of vulnerabilities attackers are actively using. Check your lockfile below to see if any of these (or older ones) hit you.</p></section>
   <section class="card">
     <h2>Your lockfile</h2>
     <textarea id="lock" spellcheck="false" placeholder="Paste package-lock.json, yarn.lock, pnpm-lock.yaml, Gemfile.lock, poetry.lock, uv.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum or composer.lock, or drop the file here."></textarea>
-    <div class="vers">
-      <label>Ruby <small>ruby -v (filled from Gemfile.lock)</small><input id="ruby" placeholder="ruby 3.4.7"></label>
-      <label>nginx <small>nginx -v</small><input id="nginx" placeholder="nginx/1.30.4"></label>
-      <label>Java <small>java -version</small><input id="java" placeholder="openjdk version &quot;21.0.13&quot;"></label>
-    </div>
     <div class="row"><button id="go">Check</button><label class="btn ghost" style="cursor:pointer">Choose file<input id="file" type="file" hidden></label>
       <button class="ghost" id="sample">Try a sample</button><span class="mut" id="detected"></span></div>
     <div class="progress" id="prog" hidden><i></i></div>
@@ -79,36 +77,28 @@ footer{color:var(--mut);font-size:.8rem;text-align:center;margin-top:26px}footer
   <section class="card" id="results" hidden></section>
 
   <details class="card"><summary>How it works &amp; privacy</summary>
-    <p class="mut">Your lockfile is parsed by JavaScript on this page and never uploaded. To look up vulnerabilities, the page sends only <b>package names and versions</b> (e.g. <code>rails 7.1.3</code>) straight from your browser to <a href="https://osv.dev">OSV.dev</a>, Google's free, open vulnerability database that aggregates GitHub Security Advisories, PyPA, RustSec, Go and others. Severity comes from the advisory (or its CVSS score). "Fixed in" is the earliest fixed version OSV lists. Server versions (nginx, Java) are only compared on this page. The site has no backend and no analytics cookies.</p>
+    <p class="mut">Your lockfile is parsed by JavaScript on this page and never uploaded. To look up vulnerabilities, the page sends only <b>package names and versions</b> (e.g. <code>rails 7.1.3</code>) straight from your browser to <a href="https://osv.dev">OSV.dev</a>, Google's free, open vulnerability database that aggregates GitHub Security Advisories, PyPA, RustSec, Go and others. Severity comes from the advisory (or its CVSS score). "Fixed in" is the earliest fixed version OSV lists. The site has no backend and no analytics cookies.</p>
     <p class="mut">Limits: only what's in your lockfile is checked (not your OS packages or containers), and OSV can lag a few days behind a disclosure. When in doubt, follow the vendor advisory.</p>
   </details>
   <footer>Vulnerability data: <a href="https://osv.dev">OSV.dev</a>. Not affiliated with OSV or any vendor. · <a href="https://github.com/tinker-pbj/am-i-affected">Source</a></footer>
 </div>
-<script src="named.js"></script>
 <script src="parsers.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const SEV_ORDER = { CRITICAL: 0, HIGH: 1, MODERATE: 2, MEDIUM: 2, LOW: 3, UNKNOWN: 4 };
 
-// ---- this week's named vulns
-function verOf(s, product) {
-  s = String(s || '');
-  if (product === 'java') { const m = s.match(/(?:version\s+"?|^\s*)(\d+)(?:\.(\d+))?(?:\.(\d+))?/); if (!m) return null; let a = +m[1], b = +(m[2] || 0), c = +(m[3] || 0); if (a === 1) { const u = s.match(/1\.8\.0_(\d+)/); return [8, 0, u ? +u[1] : 0]; } return [a, b, c]; }
-  const m = s.match(/(\d+)\.(\d+)(?:\.(\d+))?/); return m ? [+m[1], +m[2], +(m[3] || 0)] : null;
-}
-function renderNamed() {
-  $('named').innerHTML = NAMED.map((n, i) => {
-    const v = verOf($(n.product).value, n.product), hit = v ? n.affected(v) : undefined;
-    const cls = hit === true ? 'hit' : hit === false ? 'safe' : '';
-    const st = hit === true ? 'YOU ARE AFFECTED' : hit === false ? 'NOT AFFECTED' : v ? 'CHECK THE ADVISORY' : 'ADD YOUR ' + ({ ruby: 'RUBY', nginx: 'NGINX', java: 'JAVA' }[n.product]) + ' VERSION BELOW';
-    return `<div class="nv ${cls}"><span class="st">${st}</span><br><b>${esc(n.name)}</b> <span class="chip ${n.severity}">${n.severity}</span>
-      <p>${esc(n.what)}</p>${hit === true ? `<p style="color:var(--ink)"><b>Fix:</b> ${esc(n.fix)}</p>` : ''}
-      ${n.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join('')}</div>`;
-  }).join('');
-}
-['ruby', 'nginx', 'java'].forEach((id) => $(id).addEventListener('input', renderNamed));
-renderNamed();
+// ---- new critical advisories (docs/recent.json, rebuilt daily)
+let RECENT = [];
+fetch('recent.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
+  RECENT = d.advisories || [];
+  const ago = Math.round((Date.now() - new Date(d.generated)) / 3.6e6);
+  $('recentMeta').textContent = `· ${RECENT.length} · updated ${ago < 1 ? 'just now' : ago < 48 ? ago + 'h ago' : Math.round(ago / 24) + 'd ago'}`;
+  const ECO = { npm: 'npm', PyPI: 'PyPI', RubyGems: 'Ruby', 'crates.io': 'Rust', Go: 'Go', Packagist: 'PHP', Maven: 'Java', NuGet: '.NET' };
+  const row = (a) => `<div class="ra"><span class="eco">${ECO[a.ecosystem] || esc(a.ecosystem)}</span><div><a href="https://osv.dev/vulnerability/${encodeURIComponent(a.id)}" target="_blank" rel="noopener"><code>${a.packages.slice(0, 3).map(esc).join(', ')}${a.packages.length > 3 ? ' +' + (a.packages.length - 3) : ''}</code></a>
+    ${a.exploited ? '<span class="chip CRITICAL" style="font-size:.62rem">EXPLOITED</span>' : ''}<br><span class="mut">${esc(a.summary)}</span></div><span class="mut d">${a.published.slice(5)}</span></div>`;
+  $('recent').innerHTML = RECENT.length ? RECENT.slice(0, 6).map(row).join('') + (RECENT.length > 6 ? `<details><summary class="mut">Show all ${RECENT.length}</summary>${RECENT.slice(6).map(row).join('')}</details>` : '') : '<span class="mut">None in the last 14 days.</span>';
+}).catch(() => { $('recent').innerHTML = '<span class="mut">Couldn\'t load the list right now.</span>'; });
 
 // ---- input: paste, drop, choose file
 const lock = $('lock'); let filename = '';
@@ -122,11 +112,10 @@ let parsed = null;
 function detect() {
   parsed = lock.value.trim() ? parseLockfile(lock.value, filename) : null;
   $('detected').textContent = !lock.value.trim() ? '' : parsed ? `Detected ${parsed.kind}: ${parsed.packages.length} packages (${parsed.ecosystem})` : "Couldn't recognise this format";
-  if (parsed?.extra?.ruby && !$('ruby').value) { $('ruby').value = 'ruby ' + parsed.extra.ruby; renderNamed(); }
 }
 $('sample').addEventListener('click', () => {
-  lock.value = `GEM\n  remote: https://rubygems.org/\n  specs:\n    actionpack (7.0.4)\n    nokogiri (1.13.9)\n    rack (2.2.4)\n    rails (7.0.4)\n    puma (5.6.4)\n\nPLATFORMS\n  ruby\n\nRUBY VERSION\n   ruby 3.4.7p58\n\nBUNDLED WITH\n   2.4.10\n`;
-  filename = 'Gemfile.lock'; $('ruby').value = ''; detect(); check();
+  lock.value = `GEM\n  remote: https://rubygems.org/\n  specs:\n    actionpack (7.0.4)\n    activestorage (7.0.4)\n    nokogiri (1.13.9)\n    rack (2.2.4)\n    rails (7.0.4)\n    puma (5.6.4)\n\nPLATFORMS\n  ruby\n\nRUBY VERSION\n   ruby 3.4.7p58\n\nBUNDLED WITH\n   2.4.10\n`;
+  filename = 'Gemfile.lock'; detect(); check();
 });
 
 // ---- severity
@@ -194,9 +183,8 @@ async function osvDetails(ids, onProgress) {
 
 $('go').addEventListener('click', check);
 async function check() {
-  renderNamed();
   const R = $('results'), prog = $('prog'), bar = prog.firstElementChild;
-  if (!lock.value.trim()) { R.hidden = false; R.innerHTML = '<p class="big">Paste a lockfile first.</p><p class="mut">Or just enter your Ruby / nginx / Java versions above to check this week\'s bugs.</p>'; return; }
+  if (!lock.value.trim()) { R.hidden = false; R.innerHTML = '<p class="big">Paste a lockfile first.</p>'; return; }
   if (!parsed) { R.hidden = false; R.innerHTML = `<p class="big">Couldn't read that file.</p><p class="mut">Supported: package-lock.json, yarn.lock, pnpm-lock.yaml, Gemfile.lock, poetry.lock, uv.lock, Pipfile.lock, pinned requirements.txt, Cargo.lock, go.sum / go.mod, composer.lock.</p>`; return; }
   $('go').disabled = true; prog.hidden = false; bar.style.width = '2%';
   const step = (f) => bar.style.width = Math.round(f * 100) + '%';
@@ -212,13 +200,16 @@ async function check() {
     hits.sort((a, b) => SEV_ORDER[a.worst] - SEV_ORDER[b.worst] || b.items.length - a.items.length);
     const count = {}; hits.forEach((h) => h.items.forEach((x) => count[x.sev] = (count[x.sev] || 0) + 1));
     const total = Object.values(count).reduce((a, b) => a + b, 0);
-    const named = NAMED.filter((n) => { const v = verOf($(n.product).value, n.product); return v && n.affected(v) === true; });
+    const recentIds = new Set(RECENT.map((a) => a.id));
+    hits.forEach((h) => { h.isNew = h.items.some((x) => recentIds.has(x.v.id)); });
+    hits.sort((a, b) => (b.isNew - a.isNew));
+    const nNew = hits.filter((h) => h.isNew).length;
     R.hidden = false;
     R.innerHTML = `<p class="big">${total ? `${total} known vulnerabilit${total === 1 ? 'y' : 'ies'} in ${hits.length} of ${pk.length} packages` : `<span class="ok">No known vulnerabilities</span> in ${pk.length} packages`}</p>
       <div class="sum">${['CRITICAL', 'HIGH', 'MODERATE', 'LOW', 'UNKNOWN'].filter((s) => count[s]).map((s) => `<span class="chip ${s}">${count[s]} ${s.toLowerCase()}</span>`).join('')}
-      ${named.length ? `<span class="chip CRITICAL">⚠ ${named.map((n) => esc(n.name)).join(', ')}: see above</span>` : ''}</div>
+      ${nNew ? `<span class="chip CRITICAL">🔥 ${nNew} hit by a new critical vuln</span>` : ''}</div>
       ${ids.size > 400 ? `<p class="mut">Showing details for the first 400 of ${ids.size} advisories.</p>` : ''}
-      ${hits.map((h) => `<div class="pkg"><div><code>${esc(h.p.name)} ${esc(h.p.version)}</code> <span class="chip ${h.worst}">${h.worst}</span>
+      ${hits.map((h) => `<div class="pkg"><div>${h.isNew ? '<span class="chip CRITICAL">🔥 NEW</span>' : ''}<code>${esc(h.p.name)} ${esc(h.p.version)}</code> <span class="chip ${h.worst}">${h.worst}</span>
         ${(() => { const t = target(h.items, h.p.version); return t.best ? `<span class="fix">→ upgrade to ${esc(t.best)}+</span>${t.unfixed ? ` <span class="mut">(${t.unfixed} with no fix listed)</span>` : ''}` : '<span class="mut">no fixed version listed</span>'; })()}</div>
         ${h.items.slice(0, 8).map((x) => `<div class="v"><span class="chip ${x.sev}" style="font-size:.66rem">${x.sev[0]}</span><a href="https://osv.dev/vulnerability/${encodeURIComponent(x.v.id)}" target="_blank" rel="noopener">${esc((x.v.aliases || []).find((a) => a.startsWith('CVE-')) || x.v.id)}</a> <span class="s">${esc(x.v.summary || (x.v.details || '').slice(0, 140))}</span></div>`).join('')}
         ${h.items.length > 8 ? `<div class="mut">+${h.items.length - 8} more</div>` : ''}</div>`).join('')}`;
