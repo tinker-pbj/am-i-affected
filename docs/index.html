@@ -81,7 +81,7 @@ footer{color:var(--mut);font-size:.8rem;text-align:center;margin-top:26px}footer
   <section class="card" id="results" hidden></section>
 
   <details class="card"><summary>How it works &amp; privacy</summary>
-    <p class="mut">Your lockfile is parsed by JavaScript on this page and never uploaded. To look up vulnerabilities, the page sends only <b>package names and versions</b> (e.g. <code>rails 7.1.3</code>) straight from your browser to <a href="https://osv.dev">OSV.dev</a>, Google's free, open vulnerability database that aggregates GitHub Security Advisories, PyPA, RustSec, Go and others. Severity comes from the advisory (or its CVSS score). "Fixed in" is the earliest fixed version OSV lists. The site has no backend and no analytics cookies.</p>
+    <p class="mut">Your lockfile is parsed by JavaScript on this page and never uploaded. To look up vulnerabilities, the page sends only <b>package names and versions</b> (e.g. <code>rails 7.1.3</code>) straight from your browser to <a href="https://osv.dev">OSV.dev</a>, Google's free, open vulnerability database that aggregates GitHub Security Advisories, PyPA, RustSec, Go and others. Severity comes from the advisory (or its CVSS score). "Fixed in" is the earliest fixed version OSV lists. The site has no backend and uses cookie-free Cloudflare analytics (page views only).</p>
     <p class="mut">Limits: only what's in your lockfile is checked (not your OS packages or containers), and OSV can lag a few days behind a disclosure. When in doubt, follow the vendor advisory.</p>
   </details>
   <footer>Vulnerability data: <a href="https://osv.dev">OSV.dev</a>. Not affiliated with OSV or any vendor. · <a href="https://github.com/tinker-pbj/am-i-affected">Source</a></footer>
@@ -225,5 +225,6 @@ async function check() {
   } finally { $('go').disabled = false; setTimeout(() => prog.hidden = true, 400); }
 }
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "4846c74226404cab900fc51813d578d6"}'></script>
 </body>
 </html>
