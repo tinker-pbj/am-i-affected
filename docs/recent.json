@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-19T16:26+00:00",
+ "generated": "2026-11-19T17:23+00:00",
  "days": 14,
  "advisories": [
   {
@@ -21,6 +21,39 @@
     "miren.dev/runtime"
    ],
    "summary": "Miren Runtime: Authentication bypass in RPC layer: unverified TLS client certificates grant cluster superuser access",
+   "published": "2026-11-19",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-xwcw-j52r-34x4",
+   "cve": "CVE-2026-63411",
+   "ecosystem": "Packagist",
+   "packages": [
+    "jane-php/open-api-3"
+   ],
+   "summary": "Jane: Instantiation RCE via parameter description -> raw PHPDoc */ breakout (jane-php/open-api-3)",
+   "published": "2026-11-19",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-q8v2-3j4h-xg2p",
+   "cve": "CVE-2026-63412",
+   "ecosystem": "Packagist",
+   "packages": [
+    "jane-php/open-api-3"
+   ],
+   "summary": "Jane: Instantiation RCE via query parameter name -> raw PHPDoc */ breakout (jane-php/open-api-3)",
+   "published": "2026-11-19",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-x9xr-53qx-9qcf",
+   "cve": "CVE-2026-63413",
+   "ecosystem": "Packagist",
+   "packages": [
+    "jane-php/open-api-3"
+   ],
+   "summary": "Jane: Instantiation RCE via header parameter name -> raw PHPDoc */ breakout (jane-php/open-api-3)",
    "published": "2026-11-19",
    "exploited": false
   },
