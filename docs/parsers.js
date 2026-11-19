@@ -1,7 +1,7 @@
 // Lockfile parsers. Each returns { kind, ecosystem, packages: [{name, version}], extra: {ruby?} } or null.
 // Everything runs in the browser; nothing here talks to the network.
 (function () {
-  const uniq = (list) => { const seen = new Set(); return list.filter((p) => { const k = p.name + '@' + p.version; if (!p.name || !p.version || seen.has(k)) return false; seen.add(k); return true; }); };
+  const uniq = (list) => { const seen = new Set(); return list.filter((p) => { const k = (p.ecosystem || '') + ':' + p.name + '@' + p.version; if (!p.name || !p.version || seen.has(k)) return false; seen.add(k); return true; }); };
   const tryJSON = (t) => { try { return JSON.parse(t); } catch { return null; } };
 
   function npmLock(t) {
@@ -86,13 +86,114 @@
     return { kind: 'composer.lock', ecosystem: 'Packagist', packages: [...j.packages, ...(j['packages-dev'] || [])].map((p) => ({ name: p.name, version: String(p.version).replace(/^v/, '') })) };
   }
 
-  const ORDER = [npmLock, composerLock, pipfileLock, gemfileLock, cargoLock, pnpmLock, yarnLock, pyToml, goSum, requirements];
+
+  // ---- more formats
+  const stripJSONC = (t) => t.replace(/("(?:[^"\\]|\\.)*")|\/\/[^\n]*|\/\*[\s\S]*?\*\//g, (m, str) => str || '').replace(/,(\s*[}\]])/g, '$1');
+  function bunLock(t) {   // bun.lock (text, Bun 1.2+): JSONC; packages: { key: ["name@version", ...] }
+    if (!/"lockfileVersion"/.test(t) || !/"workspaces"/.test(t)) return null;
+    let j; try { j = JSON.parse(stripJSONC(t)); } catch { return null; }
+    const out = [];
+    for (const v of Object.values(j.packages || {})) {
+      const id = Array.isArray(v) ? v[0] : null; if (typeof id !== 'string') continue;
+      const at = id.lastIndexOf('@'); if (at <= 0) continue;
+      const ver = id.slice(at + 1); if (!/^\d/.test(ver)) continue;   // skip workspace:, github:, file: …
+      out.push({ name: id.slice(0, at), version: ver });
+    }
+    return { kind: 'bun.lock', ecosystem: 'npm', packages: out };
+  }
+  function denoLock(t) {
+    const j = tryJSON(t); if (!j || !j.version || !(j.npm || j.packages?.npm)) return null;
+    const npm = j.npm || j.packages.npm, out = [];
+    for (const k of Object.keys(npm)) { const id = k.split('_')[0], at = id.lastIndexOf('@'); if (at > 0) out.push({ name: id.slice(0, at), version: id.slice(at + 1) }); }
+    return { kind: 'deno.lock', ecosystem: 'npm', packages: out };
+  }
+  function pubspecLock(t) {
+    if (!/^packages:\s*$/m.test(t) || !/^\s+source: (hosted|git|path|sdk)/m.test(t)) return null;
+    const out = [];
+    for (const m of t.matchAll(/^ {2}([a-z0-9_]+):\n((?: {4}.*\n?)+)/gm)) {
+      const v = m[2].match(/^ {4}version: "?([^"\n]+)"?/m), src = m[2].match(/^ {4}source: (\w+)/m);
+      if (v && (!src || src[1] === 'hosted')) out.push({ name: m[1], version: v[1] });
+    }
+    return { kind: 'pubspec.lock', ecosystem: 'Pub', packages: out };
+  }
+  function mixLock(t) {
+    if (!/^%\{/.test(t.trim()) || !/:hex,/.test(t)) return null;
+    return { kind: 'mix.lock', ecosystem: 'Hex', packages: [...t.matchAll(/\{:hex,\s*:"?([\w-]+)"?,\s*"([^"]+)"/g)].map((m) => ({ name: m[1], version: m[2] })) };
+  }
+  function nugetLock(t) {
+    const j = tryJSON(t); if (!j || typeof j.dependencies !== 'object' || 'lockfileVersion' in j || !Object.values(j.dependencies).some((f) => f && typeof f === 'object' && Object.values(f).some((d) => d && d.resolved))) return null;
+    const out = []; for (const fw of Object.values(j.dependencies)) for (const [name, d] of Object.entries(fw || {})) if (d && d.resolved && d.type !== 'Project') out.push({ name, version: d.resolved });
+    return { kind: 'packages.lock.json', ecosystem: 'NuGet', packages: out };
+  }
+  function csproj(t) {
+    if (!/<PackageReference\b/i.test(t)) return null;
+    const out = [];
+    for (const m of t.matchAll(/<PackageReference\b([^>]*?)(?:\/>|>([\s\S]*?)<\/PackageReference>)/gi)) {
+      const inc = m[1].match(/Include="([^"]+)"/i), v = m[1].match(/Version="([^"]+)"/i) || (m[2] || '').match(/<Version>([^<]+)<\/Version>/i);
+      if (inc && v && /^\d/.test(v[1])) out.push({ name: inc[1], version: v[1] });
+    }
+    return { kind: '.csproj', ecosystem: 'NuGet', packages: out };
+  }
+  function gradleLock(t) {
+    const ms = [...t.matchAll(/^([\w.\-]+):([\w.\-]+):([^=\s]+)=/gm)]; if (!ms.length) return null;
+    return { kind: 'gradle.lockfile', ecosystem: 'Maven', packages: ms.map((m) => ({ name: m[1] + ':' + m[2], version: m[3] })) };
+  }
+  function pomXml(t) {
+    if (!/<project\b[\s\S]*<dependencies>/i.test(t)) return null;
+    const props = Object.fromEntries([...t.matchAll(/<properties>([\s\S]*?)<\/properties>/gi)].flatMap((m) => [...m[1].matchAll(/<([\w.\-]+)>([^<]+)<\/\1>/g)].map((x) => [x[1], x[2].trim()])));
+    const out = [];
+    for (const m of t.matchAll(/<dependency>([\s\S]*?)<\/dependency>/gi)) {
+      const g = m[1].match(/<groupId>([^<]+)<\/groupId>/), a = m[1].match(/<artifactId>([^<]+)<\/artifactId>/), v = m[1].match(/<version>([^<]+)<\/version>/);
+      if (!g || !a || !v) continue;
+      const ver = v[1].trim().replace(/^\$\{([^}]+)\}$/, (_, k) => props[k] || '');
+      if (/^\d/.test(ver)) out.push({ name: g[1].trim() + ':' + a[1].trim(), version: ver });
+    }
+    return { kind: 'pom.xml', ecosystem: 'Maven', packages: out };
+  }
+  function swiftResolved(t) {
+    const j = tryJSON(t); const pins = j && (j.pins || j.object?.pins); if (!Array.isArray(pins)) return null;
+    const out = pins.filter((p) => p.state?.version).map((p) => ({ name: (p.location || p.repositoryURL || '').replace(/^https?:\/\//, '').replace(/\.git$/, ''), version: p.state.version }));
+    return { kind: 'Package.resolved', ecosystem: 'SwiftURL', packages: out };
+  }
+  function renvLock(t) {
+    const j = tryJSON(t); if (!j || !j.Packages || !j.R) return null;
+    return { kind: 'renv.lock', ecosystem: 'CRAN', packages: Object.values(j.Packages).filter((p) => p.Version && (!p.Source || p.Source === 'Repository')).map((p) => ({ name: p.Package, version: p.Version })) };
+  }
+  // SBOMs can mix ecosystems: each package carries its own, from its purl.
+  const PURL_ECO = { npm: 'npm', pypi: 'PyPI', gem: 'RubyGems', cargo: 'crates.io', golang: 'Go', composer: 'Packagist', maven: 'Maven', nuget: 'NuGet', pub: 'Pub', hex: 'Hex', cran: 'CRAN', swift: 'SwiftURL' };
+  function fromPurl(purl) {
+    const m = String(purl).match(/^pkg:([a-z]+)\/(.+?)@([^?#]+)/); if (!m || !PURL_ECO[m[1]]) return null;
+    let name = decodeURIComponent(m[2]);
+    if (m[1] === 'maven') name = name.replace('/', ':');
+    if (m[1] === 'pypi') name = name.toLowerCase();
+    return { name, version: decodeURIComponent(m[3]).replace(/^v(?=\d)/, m[1] === 'golang' ? '' : 'v'), ecosystem: PURL_ECO[m[1]] };
+  }
+  function sbom(t) {
+    const j = tryJSON(t); if (!j) return null;
+    let purls = [];
+    if (j.bomFormat === 'CycloneDX') (function walk(cs) { for (const c of cs || []) { if (c.purl) purls.push(c.purl); walk(c.components); } })(j.components);
+    else if (j.spdxVersion) for (const p of j.packages || []) for (const r of p.externalRefs || []) if (r.referenceType === 'purl') purls.push(r.referenceLocator);
+    else return null;
+    return { kind: j.bomFormat === 'CycloneDX' ? 'CycloneDX SBOM' : 'SPDX SBOM', ecosystem: 'mixed', packages: purls.map(fromPurl).filter(Boolean) };
+  }
+
+  const ORDER = [sbom, npmLock, bunLock, denoLock, composerLock, pipfileLock, nugetLock, swiftResolved, renvLock, gemfileLock, cargoLock, pnpmLock, pubspecLock, mixLock, yarnLock, pyToml, pomXml, csproj, gradleLock, goSum, requirements];
   window.parseLockfile = function (text, filename = '') {
     const f = filename.toLowerCase();
     const byName = { 'package-lock.json': npmLock, 'npm-shrinkwrap.json': npmLock, 'yarn.lock': yarnLock, 'pnpm-lock.yaml': pnpmLock, 'gemfile.lock': gemfileLock,
-      'cargo.lock': cargoLock, 'poetry.lock': pyToml, 'uv.lock': pyToml, 'pipfile.lock': pipfileLock, 'go.sum': goSum, 'go.mod': goSum, 'composer.lock': composerLock };
+      'cargo.lock': cargoLock, 'poetry.lock': pyToml, 'uv.lock': pyToml, 'pdm.lock': pyToml, 'pipfile.lock': pipfileLock, 'go.sum': goSum, 'go.mod': goSum, 'composer.lock': composerLock,
+      'bun.lock': bunLock, 'deno.lock': denoLock, 'pubspec.lock': pubspecLock, 'mix.lock': mixLock, 'packages.lock.json': nugetLock, 'gradle.lockfile': gradleLock,
+      'pom.xml': pomXml, 'package.resolved': swiftResolved, 'renv.lock': renvLock };
+    if (f.endsWith('.csproj') || f.endsWith('.fsproj') || f.endsWith('.vbproj')) return withDefaults(csproj(text));
+    if (/\.(cdx|spdx)\.json$|^(bom|sbom)\.json$/.test(f)) return withDefaults(sbom(text));
     const fns = byName[f] ? [byName[f], ...ORDER] : f.endsWith('.txt') ? [requirements, ...ORDER] : ORDER;
-    for (const fn of fns) { const r = fn(text); if (r && r.packages.length) { r.packages = uniq(r.packages); return r; } }
+    for (const fn of fns) { const r = withDefaults(fn(text)); if (r) return r; }
     return null;
   };
+  function withDefaults(r) {
+    if (!r || !r.packages.length) return null;
+    r.packages = uniq(r.packages.map((p) => ({ ...p, ecosystem: p.ecosystem || r.ecosystem })));
+    return r;
+  }
+  window.isBinaryBunLock = (bytes) => bytes.length > 8 && String.fromCharCode(...bytes.slice(0, 8)).startsWith('#!/usr/b') || false;
 })();

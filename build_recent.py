@@ -7,7 +7,7 @@ as known exploited are flagged. Standard library only, so it runs anywhere (GitH
 import concurrent.futures as cf, csv, datetime as dt, io, json, math, sys, urllib.request
 
 DAYS = 14
-ECOS = ['npm', 'PyPI', 'RubyGems', 'crates.io', 'Go', 'Packagist', 'Maven', 'NuGet']
+ECOS = ['npm', 'PyPI', 'RubyGems', 'crates.io', 'Go', 'Packagist', 'Maven', 'NuGet', 'Pub', 'Hex', 'SwiftURL', 'CRAN']
 BUCKET = 'https://osv-vulnerabilities.storage.googleapis.com'
 KEV = 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json'
 now = dt.datetime.now(dt.timezone.utc)

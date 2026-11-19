@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Am I Affected? Check your lockfile for known vulnerabilities</title>
-<meta name="description" content="Paste a lockfile (npm, yarn, pnpm, Gemfile.lock, poetry, requirements.txt, Cargo.lock, go.sum, composer.lock) and see which known vulnerabilities hit your dependencies, plus this week's big ones. Runs in your browser, no sign-up.">
+<meta name="description" content="Paste a lockfile or SBOM (npm, yarn, pnpm, bun, Gemfile.lock, poetry, uv, requirements.txt, Cargo.lock, go.sum, composer.lock, Maven, Gradle, NuGet, Dart, Elixir, Swift, R) and see which known vulnerabilities hit your dependencies, plus this week's big ones. Runs in your browser, no sign-up.">
 <meta name="theme-color" content="#0b0b0b">
 <style>
 :root{--bg:#f3f3f3;--card:#fff;--ink:#0b0b0b;--mut:#6e6e6e;--line:#e3e3e3;--soft:#f0f0f0;--acc:#e10b0b;--ok:#13804b;--warn:#b25e00;
@@ -65,10 +65,10 @@ footer{color:var(--mut);font-size:.8rem;text-align:center;margin-top:26px}footer
 
   <section class="card"><h2>New critical vulnerabilities, last 14 days <span class="mut" id="recentMeta" style="font-weight:500"></span></h2>
     <div id="recent" class="recent"><span class="mut">Loading…</span></div>
-    <p class="mut" style="margin:10px 0 0">Updated daily from OSV.dev. <span class="chip CRITICAL" style="font-size:.66rem">EXPLOITED</span> = on CISA's list of vulnerabilities attackers are actively using. Check your lockfile below to see if any of these (or older ones) hit you.</p></section>
+    <p class="mut" style="margin:10px 0 0">Updated every 2 hours from OSV.dev. <span class="chip CRITICAL" style="font-size:.66rem">EXPLOITED</span> = on CISA's list of vulnerabilities attackers are actively using. Check your lockfile below to see if any of these (or older ones) hit you.</p></section>
   <section class="card">
     <h2>Your lockfile</h2>
-    <textarea id="lock" spellcheck="false" placeholder="Paste package-lock.json, yarn.lock, pnpm-lock.yaml, Gemfile.lock, poetry.lock, uv.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum or composer.lock, or drop the file here."></textarea>
+    <textarea id="lock" spellcheck="false" placeholder="Paste or drop: package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lock, deno.lock, Gemfile.lock, poetry.lock, uv.lock, pdm.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum / go.mod, composer.lock, pom.xml, gradle.lockfile, packages.lock.json / .csproj, pubspec.lock, mix.lock, Package.resolved, renv.lock, or a CycloneDX / SPDX SBOM."></textarea>
     <div class="row"><button id="go">Check</button><label class="btn ghost" style="cursor:pointer">Choose file<input id="file" type="file" hidden></label>
       <button class="ghost" id="sample">Try a sample</button><span class="mut" id="detected"></span></div>
     <div class="progress" id="prog" hidden><i></i></div>
@@ -94,7 +94,7 @@ fetch('recent.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
   RECENT = d.advisories || [];
   const ago = Math.round((Date.now() - new Date(d.generated)) / 3.6e6);
   $('recentMeta').textContent = `· ${RECENT.length} · updated ${ago < 1 ? 'just now' : ago < 48 ? ago + 'h ago' : Math.round(ago / 24) + 'd ago'}`;
-  const ECO = { npm: 'npm', PyPI: 'PyPI', RubyGems: 'Ruby', 'crates.io': 'Rust', Go: 'Go', Packagist: 'PHP', Maven: 'Java', NuGet: '.NET' };
+  const ECO = { npm: 'npm', PyPI: 'PyPI', RubyGems: 'Ruby', 'crates.io': 'Rust', Go: 'Go', Packagist: 'PHP', Maven: 'Java', NuGet: '.NET', Pub: 'Dart', Hex: 'Elixir', SwiftURL: 'Swift', CRAN: 'R' };
   const row = (a) => `<div class="ra"><span class="eco">${ECO[a.ecosystem] || esc(a.ecosystem)}</span><div><a href="https://osv.dev/vulnerability/${encodeURIComponent(a.id)}" target="_blank" rel="noopener"><code>${a.packages.slice(0, 3).map(esc).join(', ')}${a.packages.length > 3 ? ' +' + (a.packages.length - 3) : ''}</code></a>
     ${a.exploited ? '<span class="chip CRITICAL" style="font-size:.62rem">EXPLOITED</span>' : ''}<br><span class="mut">${esc(a.summary)}</span></div><span class="mut d">${a.published.slice(5)}</span></div>`;
   $('recent').innerHTML = RECENT.length ? RECENT.slice(0, 6).map(row).join('') + (RECENT.length > 6 ? `<details><summary class="mut">Show all ${RECENT.length}</summary>${RECENT.slice(6).map(row).join('')}</details>` : '') : '<span class="mut">None in the last 14 days.</span>';
@@ -107,11 +107,14 @@ lock.addEventListener('input', () => { filename = ''; detect(); });
 ['dragleave', 'drop'].forEach((e) => lock.addEventListener(e, () => lock.classList.remove('drop')));
 lock.addEventListener('drop', (ev) => { ev.preventDefault(); const f = ev.dataTransfer.files[0]; if (f) readFile(f); });
 $('file').addEventListener('change', (ev) => { const f = ev.target.files[0]; if (f) readFile(f); });
-function readFile(f) { f.text().then((t) => { lock.value = t; filename = f.name; detect(); }); }
+function readFile(f) {
+  if (/\.lockb$/i.test(f.name)) { lock.value = ''; parsed = null; $('detected').innerHTML = 'bun.lockb is a binary file. Run <code>bun install --save-text-lockfile</code> (Bun 1.1.39+) and drop the resulting <b>bun.lock</b> instead.'; return; }
+  f.text().then((t) => { lock.value = t; filename = f.name; detect(); });
+}
 let parsed = null;
 function detect() {
   parsed = lock.value.trim() ? parseLockfile(lock.value, filename) : null;
-  $('detected').textContent = !lock.value.trim() ? '' : parsed ? `Detected ${parsed.kind}: ${parsed.packages.length} packages (${parsed.ecosystem})` : "Couldn't recognise this format";
+  $('detected').textContent = !lock.value.trim() ? '' : parsed ? `Detected ${parsed.kind}: ${parsed.packages.length} packages (${parsed.ecosystem === 'mixed' ? [...new Set(parsed.packages.map((p) => p.ecosystem))].join(', ') : parsed.ecosystem})` : /^#!\/usr\/bin\/env bun/.test(lock.value) ? 'That looks like binary bun.lockb. Run bun install --save-text-lockfile and paste bun.lock instead.' : "Couldn't recognise this format";
 }
 $('sample').addEventListener('click', () => {
   lock.value = `GEM\n  remote: https://rubygems.org/\n  specs:\n    actionpack (7.0.4)\n    activestorage (7.0.4)\n    nokogiri (1.13.9)\n    rack (2.2.4)\n    rails (7.0.4)\n    puma (5.6.4)\n\nPLATFORMS\n  ruby\n\nRUBY VERSION\n   ruby 3.4.7p58\n\nBUNDLED WITH\n   2.4.10\n`;
@@ -185,17 +188,17 @@ $('go').addEventListener('click', check);
 async function check() {
   const R = $('results'), prog = $('prog'), bar = prog.firstElementChild;
   if (!lock.value.trim()) { R.hidden = false; R.innerHTML = '<p class="big">Paste a lockfile first.</p>'; return; }
-  if (!parsed) { R.hidden = false; R.innerHTML = `<p class="big">Couldn't read that file.</p><p class="mut">Supported: package-lock.json, yarn.lock, pnpm-lock.yaml, Gemfile.lock, poetry.lock, uv.lock, Pipfile.lock, pinned requirements.txt, Cargo.lock, go.sum / go.mod, composer.lock.</p>`; return; }
+  if (!parsed) { R.hidden = false; R.innerHTML = `<p class="big">Couldn't read that file.</p><p class="mut">Supported: package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lock, deno.lock, Gemfile.lock, poetry.lock, uv.lock, pdm.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum / go.mod, composer.lock, pom.xml, gradle.lockfile, packages.lock.json / .csproj, pubspec.lock, mix.lock, Package.resolved, renv.lock, or a CycloneDX / SPDX SBOM. A plain package.json only has version ranges, so use its lockfile.</p>`; return; }
   $('go').disabled = true; prog.hidden = false; bar.style.width = '2%';
   const step = (f) => bar.style.width = Math.round(f * 100) + '%';
   try {
     const pk = parsed.packages, eco = parsed.ecosystem;
-    const results = await osvBatch(pk.map((p) => ({ package: { name: p.name, ecosystem: eco }, version: p.version })), step);
+    const results = await osvBatch(pk.map((p) => ({ package: { name: p.name, ecosystem: p.ecosystem }, version: p.version })), step);
     const ids = new Set(); results.forEach((r) => (r.vulns || []).forEach((v) => ids.add(v.id)));
     const det = await osvDetails([...ids].slice(0, 400), step);
     const hits = [];
     results.forEach((r, i) => { const vs = (r.vulns || []).map((x) => det[x.id]).filter(Boolean); if (vs.length) {
-      const items = vs.map((v) => ({ v, sev: severity(v), fixed: fixedIn(v, pk[i].name, eco) })).sort((a, b) => SEV_ORDER[a.sev] - SEV_ORDER[b.sev]);
+      const items = vs.map((v) => ({ v, sev: severity(v), fixed: fixedIn(v, pk[i].name, pk[i].ecosystem) })).sort((a, b) => SEV_ORDER[a.sev] - SEV_ORDER[b.sev]);
       hits.push({ p: pk[i], items, worst: items[0].sev }); } });
     hits.sort((a, b) => SEV_ORDER[a.worst] - SEV_ORDER[b.worst] || b.items.length - a.items.length);
     const count = {}; hits.forEach((h) => h.items.forEach((x) => count[x.sev] = (count[x.sev] || 0) + 1));

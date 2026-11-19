@@ -1,6 +1,6 @@
 name: Refresh recent critical advisories
 on:
-  schedule: [{ cron: "23 13 * * *" }]   # daily 13:23 UTC
+  schedule: [{ cron: "23 */2 * * *" }]   # every 2 hours
   workflow_dispatch:
 permissions: { contents: write }
 jobs:
