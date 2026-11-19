@@ -209,10 +209,10 @@ async function check() {
     const nNew = hits.filter((h) => h.isNew).length;
     R.hidden = false;
     R.innerHTML = `<p class="big">${total ? `${total} known vulnerabilit${total === 1 ? 'y' : 'ies'} in ${hits.length} of ${pk.length} packages` : `<span class="ok">No known vulnerabilities</span> in ${pk.length} packages`}</p>
-      <div class="sum">${['CRITICAL', 'HIGH', 'MODERATE', 'LOW', 'UNKNOWN'].filter((s) => count[s]).map((s) => `<span class="chip ${s}">${count[s]} ${s.toLowerCase()}</span>`).join('')}
+      <div class="sum">${['CRITICAL', 'HIGH', 'MODERATE', 'LOW', 'UNKNOWN'].filter((s) => count[s]).map((s) => `<span class="chip ${s}">${count[s]} ${s === 'UNKNOWN' ? 'unrated' : s.toLowerCase()}</span>`).join('')}
       ${nNew ? `<span class="chip CRITICAL">🔥 ${nNew} hit by a new critical vuln</span>` : ''}</div>
       ${ids.size > 400 ? `<p class="mut">Showing details for the first 400 of ${ids.size} advisories.</p>` : ''}
-      ${hits.map((h) => `<div class="pkg"><div>${h.isNew ? '<span class="chip CRITICAL">🔥 NEW</span>' : ''}<code>${esc(h.p.name)} ${esc(h.p.version)}</code> <span class="chip ${h.worst}">${h.worst}</span>
+      ${hits.map((h) => `<div class="pkg"><div>${h.isNew ? '<span class="chip CRITICAL">🔥 NEW</span>' : ''}<code>${esc(h.p.name)} ${esc(h.p.version)}</code> <span class="chip ${h.worst}">${h.worst === 'UNKNOWN' ? 'UNRATED' : h.worst}</span>
         ${(() => { const t = target(h.items, h.p.version); return t.best ? `<span class="fix">→ upgrade to ${esc(t.best)}+</span>${t.unfixed ? ` <span class="mut">(${t.unfixed} with no fix listed)</span>` : ''}` : '<span class="mut">no fixed version listed</span>'; })()}</div>
         ${h.items.slice(0, 8).map((x) => `<div class="v"><span class="chip ${x.sev}" style="font-size:.66rem">${x.sev[0]}</span><a href="https://osv.dev/vulnerability/${encodeURIComponent(x.v.id)}" target="_blank" rel="noopener">${esc((x.v.aliases || []).find((a) => a.startsWith('CVE-')) || x.v.id)}</a> <span class="s">${esc(x.v.summary || (x.v.details || '').slice(0, 140))}</span></div>`).join('')}
         ${h.items.length > 8 ? `<div class="mut">+${h.items.length - 8} more</div>` : ''}</div>`).join('')}`;
