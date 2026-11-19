@@ -33,7 +33,9 @@
   function pnpmLock(t) {
     if (!/^lockfileVersion:/m.test(t)) return null;
     const out = [];
-    const sec = t.split(/\n(?=packages:|snapshots:)/).find((s) => s.startsWith('packages:')) || t;
+    // pnpm 10 can write several YAML documents; take every top-level packages:/snapshots: section
+    const secs = t.split(/\n(?=\S)/).filter((x) => /^(packages|snapshots):/.test(x));
+    const sec = secs.length ? secs.join('\n') : t;
     for (const m of sec.matchAll(/^ {2}'?\/?((?:@[^/@\s]+\/)?[^@\s:'(]+)[@/]([0-9][^:'(\s]*)/gm)) out.push({ name: m[1], version: m[2] });
     return out.length ? { kind: 'pnpm-lock.yaml', ecosystem: 'npm', packages: out } : null;
   }

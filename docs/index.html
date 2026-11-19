@@ -10,6 +10,8 @@
 <meta property="og:title" content="Am I Affected?">
 <meta property="og:description" content="Paste a lockfile, see which known vulnerabilities hit your dependencies. Runs in your browser, nothing uploaded, no sign-up.">
 <meta property="og:url" content="https://amiaffected.dev/">
+<meta property="og:image" content="https://amiaffected.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 :root{--bg:#f3f3f3;--card:#fff;--ink:#0b0b0b;--mut:#6e6e6e;--line:#e3e3e3;--soft:#f0f0f0;--acc:#e10b0b;--ok:#13804b;--warn:#b25e00;
   --crit:#b00020;--high:#d14b00;--mod:#a87600;--low:#5a6b7b;--shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06)}
@@ -65,14 +67,14 @@ footer{color:var(--mut);font-size:.8rem;text-align:center;margin-top:26px}footer
 <div class="band"><header><a class="brand" href="/">Am I <b>Affected?</b></a></header></div>
 <div class="wrap">
   <div class="intro"><h1>Is your project affected by a known vulnerability?</h1>
-    <p>Paste or drop a lockfile. It's read <b>in your browser</b> and every dependency is checked against the open <a href="https://osv.dev" style="color:inherit">OSV database</a>, with brand-new critical bugs flagged first. No sign-up, nothing stored.</p></div>
+    <p>Paste or drop a lockfile, or a public GitHub repo URL. It's read <b>in your browser</b> and every dependency is checked against the open <a href="https://osv.dev" style="color:inherit">OSV database</a>, with brand-new critical bugs flagged first. No sign-up, nothing stored.</p></div>
 
   <section class="card"><h2>New critical vulnerabilities, last 14 days <span class="mut" id="recentMeta" style="font-weight:500"></span></h2>
     <div id="recent" class="recent"><span class="mut">Loading…</span></div>
     <p class="mut" style="margin:10px 0 0">Updated every 2 hours from OSV.dev. <span class="chip CRITICAL" style="font-size:.66rem">EXPLOITED</span> = on CISA's list of vulnerabilities attackers are actively using. Check your lockfile below to see if any of these (or older ones) hit you.</p></section>
   <section class="card">
     <h2>Your lockfile</h2>
-    <textarea id="lock" spellcheck="false" placeholder="Paste or drop: package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lock, deno.lock, Gemfile.lock, poetry.lock, uv.lock, pdm.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum / go.mod, composer.lock, pom.xml, gradle.lockfile, packages.lock.json / .csproj, pubspec.lock, mix.lock, Package.resolved, renv.lock, or a CycloneDX / SPDX SBOM."></textarea>
+    <textarea id="lock" spellcheck="false" placeholder="Paste a public GitHub repo URL, or paste / drop: package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lock, deno.lock, Gemfile.lock, poetry.lock, uv.lock, pdm.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum / go.mod, composer.lock, pom.xml, gradle.lockfile, packages.lock.json / .csproj, pubspec.lock, mix.lock, Package.resolved, renv.lock, or a CycloneDX / SPDX SBOM."></textarea>
     <div class="row"><button id="go">Check</button><label class="btn ghost" style="cursor:pointer">Choose file<input id="file" type="file" hidden></label>
       <button class="ghost" id="sample">Try a sample</button><span class="mut" id="detected"></span></div>
     <div class="progress" id="prog" hidden><i></i></div>
@@ -117,6 +119,7 @@ function readFile(f) {
 }
 let parsed = null;
 function detect() {
+  if (/^\s*(https?:\/\/)?(www\.)?github\.com\/\S+\s*$/.test(lock.value)) { parsed = null; $('detected').textContent = 'GitHub repo: press Check to fetch its lockfile'; return; }
   parsed = lock.value.trim() ? parseLockfile(lock.value, filename) : null;
   $('detected').textContent = !lock.value.trim() ? '' : parsed ? `Detected ${parsed.kind}: ${parsed.packages.length} packages (${parsed.ecosystem === 'mixed' ? [...new Set(parsed.packages.map((p) => p.ecosystem))].join(', ') : parsed.ecosystem})` : /^#!\/usr\/bin\/env bun/.test(lock.value) ? 'That looks like binary bun.lockb. Run bun install --save-text-lockfile and paste bun.lock instead.' : "Couldn't recognise this format";
 }
@@ -171,25 +174,45 @@ function target(items, current) {
 }
 
 // ---- OSV
-async function osvBatch(queries, onProgress) {
-  const res = [];
-  for (let i = 0; i < queries.length; i += 900) {
-    const r = await fetch('https://api.osv.dev/v1/querybatch', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ queries: queries.slice(i, i + 900) }) });
+async function osvBatch(queries, onProgress) {   // chunks of 900 (OSV allows 1000), fetched in parallel
+  const chunks = []; for (let i = 0; i < queries.length; i += 900) chunks.push(queries.slice(i, i + 900));
+  let done = 0;
+  const parts = await Promise.all(chunks.map(async (c) => {
+    const r = await fetch('https://api.osv.dev/v1/querybatch', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ queries: c }) });
     if (!r.ok) throw new Error('OSV returned ' + r.status);
-    res.push(...(await r.json()).results); onProgress(Math.min(1, (i + 900) / queries.length) * .4);
-  }
-  return res;
+    const j = await r.json(); onProgress(++done / chunks.length * .4); return j.results;
+  }));
+  return parts.flat();
 }
 async function osvDetails(ids, onProgress) {
   const out = {}; let done = 0; const list = [...ids];
-  await Promise.all(Array.from({ length: 8 }, async () => { while (list.length) { const id = list.pop();
+  await Promise.all(Array.from({ length: 24 }, async () => { while (list.length) { const id = list.pop();
     try { const r = await fetch('https://api.osv.dev/v1/vulns/' + encodeURIComponent(id)); if (r.ok) out[id] = await r.json(); } catch {}
     onProgress(.4 + .6 * (++done / ids.length)); } }));
   return out;
 }
 
+// ---- a public GitHub repo URL instead of a file: fetch its lockfile from raw.githubusercontent.com (CORS-enabled)
+const LOCKFILES = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lock', 'deno.lock', 'Gemfile.lock', 'poetry.lock', 'uv.lock', 'Pipfile.lock', 'pdm.lock',
+  'requirements.txt', 'Cargo.lock', 'go.sum', 'composer.lock', 'gradle.lockfile', 'packages.lock.json', 'pubspec.lock', 'mix.lock', 'Package.resolved', 'renv.lock', 'pom.xml'];
+async function fromGitHub(url) {
+  const m = url.trim().match(/^(?:https?:\/\/)?(?:www\.)?github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?(?:\/(?:tree|blob)\/([^/\s]+)(?:\/([^\s]*?))?)?\/?$/);
+  if (!m) return null;
+  const [, owner, repo, ref = 'HEAD', dir = ''] = m, base = `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir ? dir.replace(/\/$/, '') + '/' : ''}`;
+  if (/\.(lock|json|yaml|txt|sum|mod|xml|lockfile|resolved)$/.test(dir)) { const r = await fetch(base.replace(/\/$/, '')); return r.ok ? { name: dir.split('/').pop(), text: await r.text(), src: `${owner}/${repo}/${dir}` } : { error: 'not found' }; }
+  const found = await Promise.all(LOCKFILES.map(async (f) => { try { const r = await fetch(base + f); return r.ok ? { name: f, text: await r.text() } : null; } catch { return null; } }));
+  const hit = found.find((x) => x && parseLockfile(x.text, x.name));
+  return hit ? { ...hit, src: `${owner}/${repo}${dir ? '/' + dir : ''}` } : { error: 'no lockfile' };
+}
+
 $('go').addEventListener('click', check);
 async function check() {
+  if (/^\s*(https?:\/\/)?(www\.)?github\.com\//.test(lock.value) && !lock.value.trim().includes('\n')) {
+    const url = lock.value; $('detected').textContent = 'Fetching lockfile from GitHub…';
+    const g = await fromGitHub(url);
+    if (!g || g.error) { $('detected').textContent = g?.error === 'no lockfile' ? 'No lockfile found at the root of that repo. Link to the folder or the file itself.' : "Couldn't fetch that. Is the repo public?"; return; }
+    lock.value = g.text; filename = g.name; detect(); $('detected').textContent = `From ${g.src}: ` + $('detected').textContent;
+  }
   const R = $('results'), prog = $('prog'), bar = prog.firstElementChild;
   if (!lock.value.trim()) { R.hidden = false; R.innerHTML = '<p class="big">Paste a lockfile first.</p>'; return; }
   if (!parsed) { R.hidden = false; R.innerHTML = `<p class="big">Couldn't read that file.</p><p class="mut">Supported: package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lock, deno.lock, Gemfile.lock, poetry.lock, uv.lock, pdm.lock, Pipfile.lock, requirements.txt (pinned), Cargo.lock, go.sum / go.mod, composer.lock, pom.xml, gradle.lockfile, packages.lock.json / .csproj, pubspec.lock, mix.lock, Package.resolved, renv.lock, or a CycloneDX / SPDX SBOM. A plain package.json only has version ranges, so use its lockfile.</p>`; return; }
@@ -199,7 +222,8 @@ async function check() {
     const pk = parsed.packages, eco = parsed.ecosystem;
     const results = await osvBatch(pk.map((p) => ({ package: { name: p.name, ecosystem: p.ecosystem }, version: p.version })), step);
     const ids = new Set(); results.forEach((r) => (r.vulns || []).forEach((v) => ids.add(v.id)));
-    const det = await osvDetails([...ids].slice(0, 400), step);
+    const det = await osvDetails([...ids].slice(0, 1500), step);
+    for (const id of ids) if (!det[id]) det[id] = { id, summary: '(details not loaded, open the link)' };   // never drop a hit
     const hits = [];
     results.forEach((r, i) => { const vs = (r.vulns || []).map((x) => det[x.id]).filter(Boolean); if (vs.length) {
       const items = vs.map((v) => ({ v, sev: severity(v), fixed: fixedIn(v, pk[i].name, pk[i].ecosystem) })).sort((a, b) => SEV_ORDER[a.sev] - SEV_ORDER[b.sev]);
@@ -215,7 +239,7 @@ async function check() {
     R.innerHTML = `<p class="big">${total ? `${total} known vulnerabilit${total === 1 ? 'y' : 'ies'} in ${hits.length} of ${pk.length} packages` : `<span class="ok">No known vulnerabilities</span> in ${pk.length} packages`}</p>
       <div class="sum">${['CRITICAL', 'HIGH', 'MODERATE', 'LOW', 'UNKNOWN'].filter((s) => count[s]).map((s) => `<span class="chip ${s}">${count[s]} ${s === 'UNKNOWN' ? 'unrated' : s.toLowerCase()}</span>`).join('')}
       ${nNew ? `<span class="chip CRITICAL">🔥 ${nNew} hit by a new critical vuln</span>` : ''}</div>
-      ${ids.size > 400 ? `<p class="mut">Showing details for the first 400 of ${ids.size} advisories.</p>` : ''}
+      ${ids.size > 1500 ? `<p class="mut">Loaded details for 1,500 of ${ids.size} advisories; the rest are listed by ID.</p>` : ''}
       ${hits.map((h) => `<div class="pkg"><div>${h.isNew ? '<span class="chip CRITICAL">🔥 NEW</span>' : ''}<code>${esc(h.p.name)} ${esc(h.p.version)}</code> <span class="chip ${h.worst}">${h.worst === 'UNKNOWN' ? 'UNRATED' : h.worst}</span>
         ${(() => { const t = target(h.items, h.p.version); return t.best ? `<span class="fix">→ upgrade to ${esc(t.best)}+</span>${t.unfixed ? ` <span class="mut">(${t.unfixed} with no fix listed)</span>` : ''}` : '<span class="mut">no fixed version listed</span>'; })()}</div>
         ${h.items.slice(0, 8).map((x) => `<div class="v"><span class="chip ${x.sev}" style="font-size:.66rem">${x.sev[0]}</span><a href="https://osv.dev/vulnerability/${encodeURIComponent(x.v.id)}" target="_blank" rel="noopener">${esc((x.v.aliases || []).find((a) => a.startsWith('CVE-')) || x.v.id)}</a> <span class="s">${esc(x.v.summary || (x.v.details || '').slice(0, 140))}</span></div>`).join('')}

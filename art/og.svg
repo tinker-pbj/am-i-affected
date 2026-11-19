@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<rect width="1200" height="630" fill="#0b0b0b"/><rect y="616" width="1200" height="14" fill="#e10b0b"/>
+<text x="64" y="100" font-family="Inter" font-weight="900" font-size="32" letter-spacing="3" fill="#fff">AM I <tspan fill="#e10b0b">AFFECTED?</tspan></text>
+<text x="64" y="232" font-family="Inter Display" font-weight="800" font-size="72" fill="#fff">Paste a lockfile.</text>
+<text x="64" y="318" font-family="Inter Display" font-weight="800" font-size="72" fill="#e10b0b">See what's vulnerable.</text>
+<text x="64" y="400" font-family="Inter" font-weight="500" font-size="30" fill="#a8a8a8">npm · pnpm · yarn · bun · pip · poetry · uv · Ruby · Rust · Go</text>
+<text x="64" y="442" font-family="Inter" font-weight="500" font-size="30" fill="#a8a8a8">PHP · Maven · Gradle · NuGet · Dart · Elixir · Swift · R · SBOMs</text>
+<text x="64" y="520" font-family="Inter" font-weight="700" font-size="30" fill="#fff">Runs in your browser. Nothing uploaded. No sign-up.</text>
+<text x="64" y="580" font-family="Inter" font-weight="800" font-size="30" fill="#fff">amiaffected.dev</text>
+</svg>
