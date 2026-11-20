@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-20T17:13+00:00",
+ "generated": "2026-11-20T19:19+00:00",
  "days": 14,
  "advisories": [
   {
@@ -416,28 +416,6 @@
     "github.com/canonical/lxd"
    ],
    "summary": "LXD has argument injection in backup compression algorithm leading to AFW and ACE",
-   "published": "2026-11-06",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-jpf8-86f3-wp38",
-   "cve": null,
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/canonical/lxd"
-   ],
-   "summary": "LXD has arbitrary file read+write on host via templates/ symlink in malicious image",
-   "published": "2026-11-06",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-9j25-mm2h-2f76",
-   "cve": null,
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/canonical/lxd"
-   ],
-   "summary": "LXD has arbitrary file write on host via `exec-output` symlink in crafted image",
    "published": "2026-11-06",
    "exploited": false
   }
