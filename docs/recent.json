@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-19T23:01+00:00",
+ "generated": "2026-11-20T01:27+00:00",
  "days": 14,
  "advisories": [
   {
@@ -14,6 +14,94 @@
    "exploited": true
   },
   {
+   "id": "GHSA-mc8w-wjhw-45x5",
+   "cve": "CVE-2026-114516",
+   "ecosystem": "npm",
+   "packages": [
+    "ep_etherpad-lite"
+   ],
+   "summary": "Etherpad: Pre-auth arbitrary file read",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-9x8x-crjq-g64h",
+   "cve": "CVE-2026-77359",
+   "ecosystem": "PyPI",
+   "packages": [
+    "jupyter-mcp-server"
+   ],
+   "summary": "Jupyter MCP Server: Browser DNS rebinding can hijack the Jupyter backend through management routes",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-p34x-fmph-9fjx",
+   "cve": "CVE-2026-77312",
+   "ecosystem": "PyPI",
+   "packages": [
+    "flyto-core"
+   ],
+   "summary": "Flyto2 Core: Arbitrary file write via unguarded data.*/file.* modules (incomplete fix of CVE-2026-67429)",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-hq2p-f2vj-v3cm",
+   "cve": "CVE-2026-77367",
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/daptin/daptin"
+   ],
+   "summary": "Daptin: Unauthenticated SQL Injection via the `sort` query parameter on every entity list endpoint",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-wj7x-58c2-5793",
+   "cve": "CVE-2026-77369",
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/daptin/daptin"
+   ],
+   "summary": "Daptin: Broken Access Control (IDOR) in the generic YJS collaboration endpoint",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-p32v-8v8j-j534",
+   "cve": "CVE-2026-63344",
+   "ecosystem": "NuGet",
+   "packages": [
+    "Refitter"
+   ],
+   "summary": "Refitter allows arbitrary code execution through unescaped OpenAPI content-type values",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-58x9-vjvp-6mx8",
+   "cve": "CVE-2026-63346",
+   "ecosystem": "NuGet",
+   "packages": [
+    "Refitter"
+   ],
+   "summary": "Refitter allows code execution through unescaped OpenAPI header parameter names",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-3fhm-p725-h3g3",
+   "cve": "CVE-2026-63345",
+   "ecosystem": "NuGet",
+   "packages": [
+    "Refitter"
+   ],
+   "summary": "Refitter allows arbitrary code execution through unescaped OpenAPI paths",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
    "id": "GHSA-833v-v58w-294h",
    "cve": "CVE-2026-76807",
    "ecosystem": "npm",
@@ -21,6 +109,17 @@
     "@doist/todoist-mcp"
    ],
    "summary": "Todoist MCP Server: Browser DNS rebinding lets websites write and delete Todoist data through local MCP server",
+   "published": "2026-11-19",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-x8q7-6c7m-52gw",
+   "cve": "CVE-2026-128138",
+   "ecosystem": "PyPI",
+   "packages": [
+    "nltk"
+   ],
+   "summary": "NLTK incomplete fix: additional JVM/JAR sandbox bypass through unvalidated launcher tokens in java() command arguments",
    "published": "2026-11-19",
    "exploited": false
   },
