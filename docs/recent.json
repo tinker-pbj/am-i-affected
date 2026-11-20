@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-20T15:12+00:00",
+ "generated": "2026-11-20T17:13+00:00",
  "days": 14,
  "advisories": [
   {
@@ -43,6 +43,17 @@
     "flyto-core"
    ],
    "summary": "Flyto2 Core: Arbitrary file write via unguarded data.*/file.* modules (incomplete fix of CVE-2026-67429)",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-4hrh-34w3-5ww8",
+   "cve": "CVE-2026-104099",
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/fabiolb/fabio"
+   ],
+   "summary": "Fabio: Access-control bypass through unnormalized request paths",
    "published": "2026-11-20",
    "exploited": false
   },
