@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-20T19:19+00:00",
+ "generated": "2026-11-20T21:05+00:00",
  "days": 14,
  "advisories": [
   {
@@ -373,50 +373,6 @@
    ],
    "summary": "Pocket ID: Email verification token remains valid after address change, enabling arbitrary verified-email spoofing",
    "published": "2026-11-09",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-47w9-6r3f-938g",
-   "cve": null,
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/canonical/lxd"
-   ],
-   "summary": "LXD has restricted project bypass leading to arbitrary command execution",
-   "published": "2026-11-06",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-pjff-c2wc-f6jm",
-   "cve": null,
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/canonical/lxd"
-   ],
-   "summary": "LXD has arbitrary file write on client due to trusted image hash",
-   "published": "2026-11-06",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-vghh-5rfx-xhq8",
-   "cve": null,
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/canonical/lxd"
-   ],
-   "summary": "LXD has arbitrary file read+write on host via rootfs/ symlink in malicious image",
-   "published": "2026-11-06",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-fmc8-p6q7-75cc",
-   "cve": null,
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/canonical/lxd"
-   ],
-   "summary": "LXD has argument injection in backup compression algorithm leading to AFW and ACE",
-   "published": "2026-11-06",
    "exploited": false
   }
  ]
