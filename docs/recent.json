@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-23T19:17+00:00",
+ "generated": "2026-11-23T21:06+00:00",
  "days": 14,
  "advisories": [
   {
@@ -58,17 +58,6 @@
    "exploited": false
   },
   {
-   "id": "GHSA-4hrh-34w3-5ww8",
-   "cve": "CVE-2026-104099",
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/fabiolb/fabio"
-   ],
-   "summary": "Fabio: Access-control bypass through unnormalized request paths",
-   "published": "2026-11-20",
-   "exploited": false
-  },
-  {
    "id": "GHSA-hq2p-f2vj-v3cm",
    "cve": "CVE-2026-77367",
    "ecosystem": "Go",
@@ -87,6 +76,17 @@
     "github.com/daptin/daptin"
    ],
    "summary": "Daptin: Broken Access Control (IDOR) in the generic YJS collaboration endpoint",
+   "published": "2026-11-20",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-4hrh-34w3-5ww8",
+   "cve": "CVE-2026-104099",
+   "ecosystem": "Go",
+   "packages": [
+    "github.com/fabiolb/fabio"
+   ],
+   "summary": "Fabio: Access-control bypass through unnormalized request paths",
    "published": "2026-11-20",
    "exploited": false
   },
@@ -329,28 +329,6 @@
    ],
    "summary": "GPUStack: SAML callback trusts an unverified SAMLResponse, allowing authentication bypass and account takeover",
    "published": "2026-11-10",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-6xmv-cjr5-w3q8",
-   "cve": "CVE-2026-63469",
-   "ecosystem": "PyPI",
-   "packages": [
-    "fastapi-code-generator"
-   ],
-   "summary": "fastapi-code-generator: Import-time RCE via response status-code key -> unescaped @app.get(..., responses={...}) dict",
-   "published": "2026-11-09",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-p2mm-64f6-gmpp",
-   "cve": "CVE-2026-63471",
-   "ecosystem": "PyPI",
-   "packages": [
-    "fastapi-code-generator"
-   ],
-   "summary": "fastapi-code-generator: Import-time RCE via route path -> unescaped @app.get('...') decorator",
-   "published": "2026-11-09",
    "exploited": false
   },
   {
