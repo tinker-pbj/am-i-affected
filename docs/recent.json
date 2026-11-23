@@ -1,18 +1,7 @@
 {
- "generated": "2026-11-23T21:06+00:00",
+ "generated": "2026-11-23T23:09+00:00",
  "days": 14,
  "advisories": [
-  {
-   "id": "GHSA-gj9m-f8ph-pmhr",
-   "cve": "CVE-2026-102895",
-   "ecosystem": "PyPI",
-   "packages": [
-    "gpustack"
-   ],
-   "summary": "GPUStack: Authentication bypass via trusted loopback source (reverse-proxy TCP peer or X-GPUStack-Real-IP header) grants unauthenticated admin",
-   "published": "2026-11-09",
-   "exploited": true
-  },
   {
    "id": "GHSA-2r3w-c2vx-fv5g",
    "cve": "CVE-2026-133469",
@@ -329,28 +318,6 @@
    ],
    "summary": "GPUStack: SAML callback trusts an unverified SAMLResponse, allowing authentication bypass and account takeover",
    "published": "2026-11-10",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-rjr3-43j3-4q8g",
-   "cve": "CVE-2026-77596",
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/kubeflow/pipelines"
-   ],
-   "summary": "Kubeflow Pipelines API server lacks authorization for shared pipeline uploads",
-   "published": "2026-11-09",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-rm8c-2cv8-jwf6",
-   "cve": "CVE-2026-115770",
-   "ecosystem": "Go",
-   "packages": [
-    "github.com/pocket-id/pocket-id/backend"
-   ],
-   "summary": "Pocket ID: Email verification token remains valid after address change, enabling arbitrary verified-email spoofing",
-   "published": "2026-11-09",
    "exploited": false
   }
  ]
