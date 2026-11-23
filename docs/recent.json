@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-23T17:19+00:00",
+ "generated": "2026-11-23T19:17+00:00",
  "days": 14,
  "advisories": [
   {
@@ -12,6 +12,17 @@
    "summary": "GPUStack: Authentication bypass via trusted loopback source (reverse-proxy TCP peer or X-GPUStack-Real-IP header) grants unauthenticated admin",
    "published": "2026-11-09",
    "exploited": true
+  },
+  {
+   "id": "GHSA-2r3w-c2vx-fv5g",
+   "cve": "CVE-2026-133469",
+   "ecosystem": "npm",
+   "packages": [
+    "xo-server"
+   ],
+   "summary": "Xen Orchestra: Empty-object login token",
+   "published": "2026-11-23",
+   "exploited": false
   },
   {
    "id": "GHSA-mc8w-wjhw-45x5",
@@ -339,17 +350,6 @@
     "fastapi-code-generator"
    ],
    "summary": "fastapi-code-generator: Import-time RCE via route path -> unescaped @app.get('...') decorator",
-   "published": "2026-11-09",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-h667-4jj2-cgv4",
-   "cve": "CVE-2026-63470",
-   "ecosystem": "PyPI",
-   "packages": [
-    "fastapi-code-generator"
-   ],
-   "summary": "fastapi-code-generator: Call-time RCE via operation summary -> unescaped route-handler docstring",
    "published": "2026-11-09",
    "exploited": false
   },
