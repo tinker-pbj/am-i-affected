@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-24T19:18+00:00",
+ "generated": "2026-11-24T21:09+00:00",
  "days": 14,
  "advisories": [
   {
@@ -271,17 +271,6 @@
     "react-server-dom-webpack"
    ],
    "summary": "React: Unauthenticated Remote Code Execution in React Server Components",
-   "published": "2026-11-10",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-pcrw-h46h-c93h",
-   "cve": "CVE-2026-125120",
-   "ecosystem": "npm",
-   "packages": [
-    "mongoose"
-   ],
-   "summary": "Mongoose: sanitizeFilter not applied on countDocuments",
    "published": "2026-11-10",
    "exploited": false
   }
