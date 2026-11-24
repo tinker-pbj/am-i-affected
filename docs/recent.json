@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-24T15:20+00:00",
+ "generated": "2026-11-24T17:16+00:00",
  "days": 14,
  "advisories": [
   {
@@ -282,41 +282,6 @@
     "mongoose"
    ],
    "summary": "Mongoose: sanitizeFilter not applied on countDocuments",
-   "published": "2026-11-10",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-xggf-m53x-jc3f",
-   "cve": "CVE-2026-95860",
-   "ecosystem": "npm",
-   "packages": [
-    "node-opcua",
-    "node-opcua-address-space",
-    "node-opcua-server"
-   ],
-   "summary": "node-opcua: Namespace-Level RBAC Fail-Open - Anonymous Write/Call Bypass via Unbound `DefaultRolePermissions",
-   "published": "2026-11-10",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-8vv3-6qpc-gpw6",
-   "cve": "CVE-2026-107846",
-   "ecosystem": "npm",
-   "packages": [
-    "bitcoinjs-lib"
-   ],
-   "summary": "bitcoinjs-lib: Undetected merkle node duplication in block root computation validates a forged transaction list",
-   "published": "2026-11-10",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-62m9-f875-rqw6",
-   "cve": "CVE-2026-102894",
-   "ecosystem": "PyPI",
-   "packages": [
-    "gpustack"
-   ],
-   "summary": "GPUStack: SAML callback trusts an unverified SAMLResponse, allowing authentication bypass and account takeover",
    "published": "2026-11-10",
    "exploited": false
   }
