@@ -1,7 +1,18 @@
 {
- "generated": "2026-11-24T21:09+00:00",
+ "generated": "2026-11-24T23:11+00:00",
  "days": 14,
  "advisories": [
+  {
+   "id": "GHSA-c4hm-4h84-2cf3",
+   "cve": "CVE-2026-59726",
+   "ecosystem": "npm",
+   "packages": [
+    "ruflo"
+   ],
+   "summary": "ruflo MCP bridge allows unauthenticated remote code execution in default Docker Compose deployments",
+   "published": "2026-11-24",
+   "exploited": false
+  },
   {
    "id": "GHSA-2r3w-c2vx-fv5g",
    "cve": "CVE-2026-133469",
@@ -259,19 +270,6 @@
    ],
    "summary": "Microsoft Security Advisory CVE-2026-118740 - Aspire Security Feature Bypass Vulnerability",
    "published": "2026-11-12",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-xqc2-xf4c-x3h3",
-   "cve": "CVE-2026-126187",
-   "ecosystem": "npm",
-   "packages": [
-    "react-server-dom-parcel",
-    "react-server-dom-turbopack",
-    "react-server-dom-webpack"
-   ],
-   "summary": "React: Unauthenticated Remote Code Execution in React Server Components",
-   "published": "2026-11-10",
    "exploited": false
   }
  ]
