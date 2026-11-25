@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-25T15:23+00:00",
+ "generated": "2026-11-25T17:16+00:00",
  "days": 14,
  "advisories": [
   {
@@ -12,6 +12,17 @@
    "summary": "monailabel (aka MONAI Label) before 0.8.6 allows directory traversal, with resultant remote code execution, via the image parameter to the PUT /datastore/image",
    "published": "2026-11-20",
    "exploited": true
+  },
+  {
+   "id": "GHSA-crj3-q72p-ggqm",
+   "cve": "CVE-2026-64670",
+   "ecosystem": "npm",
+   "packages": [
+    "@waline/client"
+   ],
+   "summary": "@waline/client vulnerable to stored XSS through unsanitized comment edit previews",
+   "published": "2026-11-25",
+   "exploited": false
   },
   {
    "id": "GHSA-c4hm-4h84-2cf3",
