@@ -1,7 +1,18 @@
 {
- "generated": "2026-11-25T19:13+00:00",
+ "generated": "2026-11-25T21:13+00:00",
  "days": 14,
  "advisories": [
+  {
+   "id": "GHSA-2r3w-c2vx-fv5g",
+   "cve": "CVE-2026-133469",
+   "ecosystem": "npm",
+   "packages": [
+    "xo-server"
+   ],
+   "summary": "Xen Orchestra: Empty-object login token",
+   "published": "2026-11-23",
+   "exploited": true
+  },
   {
    "id": "PYSEC-2026-4401",
    "cve": "CVE-2026-133968",
@@ -33,17 +44,6 @@
    ],
    "summary": "ruflo MCP bridge allows unauthenticated remote code execution in default Docker Compose deployments",
    "published": "2026-11-24",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-2r3w-c2vx-fv5g",
-   "cve": "CVE-2026-133469",
-   "ecosystem": "npm",
-   "packages": [
-    "xo-server"
-   ],
-   "summary": "Xen Orchestra: Empty-object login token",
-   "published": "2026-11-23",
    "exploited": false
   },
   {
