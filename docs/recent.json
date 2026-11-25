@@ -1,7 +1,18 @@
 {
- "generated": "2026-11-25T09:31+00:00",
+ "generated": "2026-11-25T11:14+00:00",
  "days": 14,
  "advisories": [
+  {
+   "id": "PYSEC-2026-4401",
+   "cve": "CVE-2026-133968",
+   "ecosystem": "PyPI",
+   "packages": [
+    "monailabel"
+   ],
+   "summary": "monailabel (aka MONAI Label) before 0.8.6 allows directory traversal, with resultant remote code execution, via the image parameter to the PUT /datastore/image",
+   "published": "2026-11-20",
+   "exploited": true
+  },
   {
    "id": "GHSA-c4hm-4h84-2cf3",
    "cve": "CVE-2026-59726",
