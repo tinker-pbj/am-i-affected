@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-26T07:41+00:00",
+ "generated": "2026-11-26T09:28+00:00",
  "days": 14,
  "advisories": [
   {
@@ -263,17 +263,6 @@
     "activestorage"
    ],
    "summary": "Active Storage: Possible arbitrary file write and read in image analysis",
-   "published": "2026-11-12",
-   "exploited": false
-  },
-  {
-   "id": "RUSTSEC-2026-0501",
-   "cve": null,
-   "ecosystem": "crates.io",
-   "packages": [
-    "bsv-rs"
-   ],
-   "summary": "Shamir backup recovery accepts a share at x = 0, so a supplied share can substitute the recovered private key",
    "published": "2026-11-12",
    "exploited": false
   },
