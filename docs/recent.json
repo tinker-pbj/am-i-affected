@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-26T23:13+00:00",
+ "generated": "2026-11-27T01:40+00:00",
  "days": 14,
  "advisories": [
   {
@@ -32,6 +32,28 @@
     "@waline/client"
    ],
    "summary": "@waline/client vulnerable to stored XSS through unsanitized comment edit previews",
+   "published": "2026-11-25",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-7wwv-x6mc-pxqx",
+   "cve": "CVE-2026-69179",
+   "ecosystem": "Packagist",
+   "packages": [
+    "tastyigniter/tastyigniter"
+   ],
+   "summary": "TastyIgniter allows Remote Code Execution (RCE) via Unrestricted file upload in Media Manager",
+   "published": "2026-11-25",
+   "exploited": false
+  },
+  {
+   "id": "GHSA-743w-g9pf-8p94",
+   "cve": "CVE-2026-69178",
+   "ecosystem": "Packagist",
+   "packages": [
+    "tastyigniter/tastyigniter"
+   ],
+   "summary": "TastyIgniter mail template editor allows remote code execution via server-side template injection",
    "published": "2026-11-25",
    "exploited": false
   },
@@ -242,28 +264,6 @@
    ],
    "summary": "Phoenix: Format String Injection in applyChatTemplate",
    "published": "2026-11-17",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-x585-4vv8-2mh2",
-   "cve": "CVE-2026-100397",
-   "ecosystem": "PyPI",
-   "packages": [
-    "rucio"
-   ],
-   "summary": "Rucio: Unauthenticated administrator impersonation through SSH challenge tokens",
-   "published": "2026-11-13",
-   "exploited": false
-  },
-  {
-   "id": "GHSA-f3w6-w445-fwh9",
-   "cve": "CVE-2026-122006",
-   "ecosystem": "RubyGems",
-   "packages": [
-    "activestorage"
-   ],
-   "summary": "Active Storage: Possible arbitrary file write and read in image analysis",
-   "published": "2026-11-12",
    "exploited": false
   }
  ]
